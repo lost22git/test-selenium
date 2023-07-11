@@ -1,13 +1,11 @@
 pluginManagement {
-  repositories {
-    maven { url 'https://repo.spring.io/release' }
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
-    mavenLocal()
-    mavenCentral()
-    gradlePluginPortal()
-  }
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		gradlePluginPortal()
+	}
 }
 
-rootProject.name = "gradle-project-template"
+rootProject.name = "test-selenium"
+include 'app'
 

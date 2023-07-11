@@ -21,10 +21,10 @@ plugin-shadow = "7.1.2"
 plugin-spotless = "6.19.0"
 plugin-version-catalog-update = "0.8.0"
 plugin-taskinfo = "1.4.0"
-plugin-version-catalog-update = "0.8.0"
 plugin-versions = "0.46.0"
 record-builder = "36"
 slf4j = "2.0.7"
+selenium = "4.10.0"
 
 [libraries]
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -47,23 +47,24 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }
 record-builder = { module = "io.soabase.record-builder:record-builder-core", version.ref = "record-builder" }
 record-builder-processor = { module = "io.soabase.record-builder:record-builder-processor", version.ref = "record-builder" }
+selenium = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [bundles]
 jackson = [
-    "jackson-annotations",
-    "jackson-datatype-jdk8",
-    "jackson-jsr310",
-    "jackson-module-parameter-names",
+  "jackson-annotations",
+  "jackson-datatype-jdk8",
+  "jackson-jsr310",
+  "jackson-module-parameter-names",
 ]
 jmh = [
-    "jmh-core",
-    "jmh-generator-annprocess",
+  "jmh-core",
+  "jmh-generator-annprocess",
 ]
 junit = [
-    "junit-jupiter-api",
-    "junit-jupiter-engine",
-    "junit-jupiter-params",
+  "junit-jupiter-api",
+  "junit-jupiter-engine",
+  "junit-jupiter-params",
 ]
 
 [plugins]
