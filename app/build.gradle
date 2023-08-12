@@ -1,4 +1,21 @@
+plugins {
+  id("application")
+  alias(libs.plugins.shadow)
+  alias(libs.plugins.nativeimage)
+}
+
 dependencies {
   implementation(libs.selenium)
-  implementation(libs.logback)
+  implementation(libs.appium)
+  testImplementation(libs.appium)
 }
+
+ext {
+  mainClass = "lost.test.selenium.Main"
+}
+
+application {
+  mainClass = "${project.mainClass}"
+}
+
+apply from: "../script/gradle/native_image.gradle"
