@@ -47,7 +47,7 @@ public class Main {
     static String getSubscription() {
         String subscription;
 
-        var driver = createDriver();
+        var driver = createWebDriver();
 
         var wait = new FluentWait<WebDriver>(driver)
                 .withTimeout(ofSeconds(30))
@@ -174,7 +174,7 @@ public class Main {
     }
 
     @NotNull
-    static ChromeDriver createDriver() {
+    static ChromeDriver createWebDriver() {
         String buster_ctx = null;
         try (var in = Main.class.getClassLoader().getResourceAsStream("buster.crx")) {
             buster_ctx = Base64.getEncoder().encodeToString(in.readAllBytes());
@@ -183,7 +183,7 @@ public class Main {
         }
         var driverOption = new ChromeOptions()
                 .setBinary("E:\\scoop\\global\\shims\\brave-beta.exe")
-                //            .addArguments("--headless=new")
+                .addArguments("--headless=new")
                 //            .addArguments("--incognito") // private mode for brave
                 .addEncodedExtensions(buster_ctx);
 
@@ -244,13 +244,12 @@ public class Main {
 
     static void updateClashProfile(String subscription) {
         err.println("update clash profile...");
-        var path = Paths.get("C:\\Users\\zzz\\.config\\clash-verge\\profiles.yaml");
         try {
+            var path = Paths.get("C:\\Users\\zzz\\.config\\clash-verge\\profiles.yaml");
             var str = Files.readString(path);
 
             var l_index = str.indexOf("file: r9qrJcrdSehf.yaml");
             var r_index = str.lastIndexOf("- name: 最萌の云 - CuteCloud");
-
             String newStr = str.substring(0, l_index)
                     + str.substring(l_index, r_index)
                             .replaceFirst(
@@ -265,6 +264,7 @@ public class Main {
 
     static void restartClash() {
         err.println("restart clash...");
+        // stop clash process and children
         ProcessHandle.allProcesses()
                 .filter(p -> p.info()
                         .command()
