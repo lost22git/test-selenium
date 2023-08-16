@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.*;
@@ -34,7 +35,7 @@ public class Main {
         // get subscription
         var subscription = getSubscription();
 
-        if (subscription == null) return;
+        if (subscription == null || subscription.isBlank() || !subscription.startsWith("http")) return;
 
         // update clash profile
         updateClashProfile(subscription);
@@ -98,6 +99,8 @@ public class Main {
 
             // get subscription on dashboard page
             getSubscriptionOnDashboardPage(driver, wait);
+
+            parkNanos(ofSeconds(1).toNanos());
 
             // get subscription from clipboard
             subscription = getClipboardContent();
@@ -175,6 +178,7 @@ public class Main {
 
     @NotNull
     static ChromeDriver createWebDriver() {
+        var headless = System.getProperties().containsKey("headless");
         String buster_ctx = null;
         try (var in = Main.class.getClassLoader().getResourceAsStream("buster.crx")) {
             buster_ctx = Base64.getEncoder().encodeToString(in.readAllBytes());
@@ -183,9 +187,11 @@ public class Main {
         }
         var driverOption = new ChromeOptions()
                 .setBinary("E:\\scoop\\global\\shims\\brave-beta.exe")
-                .addArguments("--headless=new")
-                //            .addArguments("--incognito") // private mode for brave
                 .addEncodedExtensions(buster_ctx);
+        if (headless) {
+            driverOption.addArguments("--headless=new");
+        }
+        //            .addArguments("--incognito") // private mode for brave
 
         var proxy = new Proxy().setSocksProxy("localhost:55556").setSocksVersion(5);
         driverOption.setProxy(proxy);
@@ -250,12 +256,17 @@ public class Main {
 
             var l_index = str.indexOf("file: r9qrJcrdSehf.yaml");
             var r_index = str.lastIndexOf("- name: 最萌の云 - CuteCloud");
-            String newStr = str.substring(0, l_index)
-                    + str.substring(l_index, r_index)
-                            .replaceFirst(
-                                    "([\\s\\S]+r9qrJcrdSehf[\\s\\S]+?url: )\\S+?(\n[\\s\\S]+)",
-                                    "$1" + subscription + "$2")
-                    + str.substring(r_index);
+            var to_replace = str.substring(l_index, r_index);
+            var replaced = "";
+            if (to_replace.contains("url:")) {
+                replaced = to_replace.replaceFirst(
+                        "([\\s\\S]+r9qrJcrdSehf[\\s\\S]+?url: )\\S+?(\n[\\s\\S]+)", "$1" + subscription + "$2");
+            } else {
+                var lines = to_replace.lines().collect(Collectors.toList());
+                lines.add(1, "\turl: " + subscription);
+                replaced = String.join("\n", lines);
+            }
+            String newStr = str.substring(0, l_index) + replaced + str.substring(r_index);
 
             Files.writeString(path, newStr);
         } catch (Exception ignore) {
